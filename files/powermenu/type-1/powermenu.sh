@@ -10,12 +10,12 @@
 ## style-1   style-2   style-3   style-4   style-5
 
 # Current Theme
-dir="$HOME/.config/rofi/powermenu/type-1"
+dir="$HOME/.config/rofi/apps/files/powermenu/type-1"
 theme='style-1'
 
 # CMDs
 uptime="`uptime -p | sed -e 's/up //g'`"
-host=`hostname`
+host=`hostnamectl hostname`
 
 # Options
 shutdown=' Shutdown'
@@ -62,18 +62,18 @@ run_cmd() {
 	selected="$(confirm_exit)"
 	if [[ "$selected" == "$yes" ]]; then
 		if [[ $1 == '--shutdown' ]]; then
-			systemctl poweroff
+			systemctl poweroff -i
 		elif [[ $1 == '--reboot' ]]; then
 			systemctl reboot
 		elif [[ $1 == '--suspend' ]]; then
-			mpc -q pause
-			amixer set Master mute
 			systemctl suspend
 		elif [[ $1 == '--logout' ]]; then
 			if [[ "$DESKTOP_SESSION" == 'openbox' ]]; then
 				openbox --exit
 			elif [[ "$DESKTOP_SESSION" == 'bspwm' ]]; then
 				bspc quit
+			elif [[ "$DESKTOP_SESSION" == 'herbstluftwm' ]]; then
+				herbstclient quit
 			elif [[ "$DESKTOP_SESSION" == 'i3' ]]; then
 				i3-msg exit
 			elif [[ "$DESKTOP_SESSION" == 'plasma' ]]; then
@@ -95,14 +95,16 @@ case ${chosen} in
 		run_cmd --reboot
         ;;
     $lock)
-		if [[ -x '/usr/bin/betterlockscreen' ]]; then
-			betterlockscreen -l
-		elif [[ -x '/usr/bin/i3lock' ]]; then
+		if type betterlockscreen >/dev/null 2>&1 ; then
+			betterlockscreen -l dimblur
+		elif type i3lock >/dev/null 2>&1 ; then
 			i3lock
 		fi
         ;;
     $suspend)
-		run_cmd --suspend
+		# disable the confirmation dialog for now
+		# run_cmd --suspend
+		systemctl suspend
         ;;
     $logout)
 		run_cmd --logout
