@@ -6,12 +6,16 @@
 ## Applets : Screenshot
 
 # Import Current Theme
-source "$HOME"/.config/rofi/applets/shared/theme.bash
+source "$HOME"/.config/rofi/apps/files/applets/shared/theme.bash
 theme="$type/$style"
+
+# Screenshot directory
+# OUTPUT_DIR="${xdg-user-dir PICTURES}/Screenshots"
+OUTPUT_DIR="$HOME/pic/screenshots"
 
 # Theme Elements
 prompt='Screenshot'
-mesg="DIR: `xdg-user-dir PICTURES`/Screenshots"
+mesg="DIR: $OUTPUT_DIR"
 
 if [[ "$theme" == *'type-1'* ]]; then
 	list_col='1'
@@ -67,7 +71,7 @@ run_rofi() {
 # Screenshot
 time=`date +%Y-%m-%d-%H-%M-%S`
 geometry=`xrandr | grep 'current' | head -n1 | cut -d',' -f2 | tr -d '[:blank:],current'`
-dir="`xdg-user-dir PICTURES`/Screenshots"
+dir="$OUTPUT_DIR"
 file="Screenshot_${time}_${geometry}.png"
 
 if [[ ! -d "$dir" ]]; then
@@ -78,7 +82,7 @@ fi
 notify_view() {
 	notify_cmd_shot='dunstify -u low --replace=699'
 	${notify_cmd_shot} "Copied to clipboard."
-	viewnior ${dir}/"$file"
+	feh ${dir}/"$file"
 	if [[ -e "$dir/$file" ]]; then
 		${notify_cmd_shot} "Screenshot Saved."
 	else
